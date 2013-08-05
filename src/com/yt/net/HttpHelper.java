@@ -15,8 +15,8 @@ import java.util.Set;
 import com.yt.util.Util;
 
 public abstract class HttpHelper {
-	public static final String SERVER_ADDR = "http://localhost:8080/";
-	public static final String APP_NAME = "YjwServer";
+	public static final String SERVER_ADDR = "http://192.168.1.189:8080/";
+	public static final String APP_NAME = "YTServer";
 	
 	public static String getURL(String path){ return SERVER_ADDR+APP_NAME+"/"+path; }
 			
