@@ -1,0 +1,67 @@
+option optimize_for = LITE_RUNTIME;
+package com.yt.protocol;
+
+import "yueting.proto";
+
+///////////Request/////////////////
+message IntRequest
+{
+	optional string session 			= 1;
+	required int32 data 				= 2;	
+}
+
+message StringRequest
+{
+	optional string session 			= 1;
+	required string data 				= 2;	
+}
+
+message SelectWorkRequest
+{
+	optional string session 			= 1;
+	required SelectWork data 			= 2;	
+}
+
+message AccountRequest
+{
+	optional string session 			= 1;
+	required Account data 				= 2;
+}
+
+message UserRequest
+{
+	optional string session 			= 1;
+	required User data 				= 2;
+}
+
+message WorkRequest
+{
+	optional string session 			= 1;
+	required Work data 				= 2;
+}
+
+///////////Result/////////////////
+message StringResult
+{
+	required ResultCode resultCode 	= 1;
+	optional string data 				= 2;
+}
+
+message IntResult
+{
+	required ResultCode resultCode 	= 1;
+	optional int32 data 				= 2;
+}
+
+message WorksResult
+{
+	required ResultCode resultCode 	= 1;
+	repeated Work works				= 2;
+}
+
+message UserResult
+{
+	required ResultCode resultCode 	= 1;
+	optional User data 				= 2;
+}
+

@@ -1,0 +1,141 @@
+option optimize_for = LITE_RUNTIME;
+package com.yt.protocol;
+//(1)message ，enum  import other file
+
+//(2)field choice
+//required
+//optional
+//repeated [default]
+
+//(3)type
+//string [UTF8 string or 7bit]
+//float double
+//int32  sint32 uint32 fixed32 sfixed32
+//int64  sint64 uint64 fixed64 sfixed64
+//bool
+//bytes
+
+//note:
+//int32对正数编码效率比较高，对负数编码效率低，sint32采用Zig-Zag编码，来提高编码效率
+//uint32和int32是应用上进行区分，sint32和int32是为了编码上的区分与提示
+//fixed32:固定4字节无符号整数
+//sfixed32固定4字节有符号整数
+
+//(4)format
+//required int32 keyname   = 1            [default=10];
+//可选性   类型  字段名字  字段数字标号    默认值
+//空字符串  false zero enum-firstval
+
+//bool ParseFromString(const string& data)
+//bool SerializeToString(string* output)
+
+//字段语法格式 (1)[required/optional/repeated]  (2)string/float/double/int32/int64/bool/bytes (3)字段名称  
+//（4）= （5）字段编号 (6)可选默认值[default='']; 
+//所有数字的默认值为0，字符串为空串  bool为false
+
+enum ResultCode {
+	RC_SUCCESS = 0; 
+	RC_FAILED = 1;
+}
+
+enum Sex {
+	SEX_NULL = 0;
+	SEX_MALE = 1;
+	SEX_FEMALE = 2;
+}
+
+enum ShareType {
+	ST_NULL = 0;
+	ST_WEIBO = 1;
+	ST_TXWEIBO = 2;
+	ST_WEIXIN = 3;
+}
+
+enum UserType {
+	UT_NULL = 0;
+	UT_NON_TAKE_PART = 1;
+	UT_TAKE_PART =2;
+}
+
+enum Province {
+	PROVINCE_NULL = 0;
+	PROVINCE_ShanDong = 1;
+	PROVINCE_JiangSu = 2;
+	PROVINCE_AnHui= 3;
+	PROVINCE_ZheJiang = 4;
+	PROVINCE_FuJian = 5;
+	PROVINCE_ShangHai = 6;
+	PROVINCE_GuangDong = 7;
+	PROVINCE_GuangXi = 8;
+	PROVINCE_HaiNan = 9;
+	PROVINCE_HuBei = 10;
+	PROVINCE_HuNan = 11;
+	PROVINCE_HeNan = 12;
+	PROVINCE_JiangXi = 13;
+	PROVINCE_BeiJing = 14;
+	PROVINCE_TianJin = 15;
+	PROVINCE_HeBei = 16;
+	PROVINCE_Shan1Xi = 17;
+	PROVINCE_NeiMengGu = 18;
+	PROVINCE_NingXia = 19;
+	PROVINCE_XinJiang = 20;
+	PROVINCE_QingHai = 21;
+	PROVINCE_Shan3Xi = 22;
+	PROVINCE_GanSu = 23;
+	PROVINCE_SiChuan = 24;
+	PROVINCE_YunNan = 25;
+	PROVINCE_GuiZhou = 26;
+	PROVINCE_XiZang = 27;
+	PROVINCE_ChongQing = 28;
+	PROVINCE_LiaoNing = 29;
+	PROVINCE_JiNing = 30;
+	PROVINCE_HeiLongJiang = 31;
+	PROVINCE_XiangGang = 32;
+	PROVINCE_AoMen = 33;
+	PROVINCE_TaiWan = 34;
+}
+
+message Account
+{
+	required string uid  		= 1;
+	required string password 	= 2;
+}
+
+message User {
+	required string uid 			= 1;
+	required UserType type 		= 2 [default = UT_NON_TAKE_PART];
+	optional string name 			= 3;
+	optional Sex sex 				= 4;
+	optional string phonenumber 	= 5;
+	optional string email 			= 6;
+	optional Province location 	= 7;
+	optional string photourl 		= 8;	
+	repeated Province divisions 	= 9;
+}
+
+message Work {
+	required int32 wid 		= 1;
+	required string name 		= 2;
+	required string ownerId 	= 3;
+	required int32 favorCount 	= 4 [default = 0];
+	required int32 playCount 	= 5 [default = 0];
+	required int32 timeLength 	= 6	[default = 0];
+	/**这东西其实就是扩展名,表示格式用的，图片和视屏也靠这个区分，不区分大小写*/
+	required string datatype 	= 7;
+	required string dataurl 	= 8;
+	optional string coverurl 	= 9;
+}
+
+message SelectWork{
+	/**值规范，采用SQL排序格式，域名采用Bean.Field模式
+	 *如：
+	 *orderby = "work.time DESC"
+	 *orderby = "user.name ASC, user.uid DESC"
+	 *反正就是替换了字符串就能直接拿进SQL的ORDER BY 子句的形式
+	 **/
+	required string orderby 	= 1	[default = "work.time"];
+	required int32 from 		= 2	[default = 0];
+	required int32 count 		= 3	[default = 20];
+	optional User user 		= 4;
+	optional Work work 		= 5;	
+}

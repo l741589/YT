@@ -1,15 +1,22 @@
 package com.yt.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.yt.activity.BaseActivity;
+import com.yt.protocol.Yueting.Account;
+import com.yt.protocol.Yueting.User;
+import com.yt.thread.PostThread;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Message;
 
 /**用于切换Activity, *检测更新, *更新 */
 public class Util {
@@ -92,4 +99,50 @@ public class Util {
 		T ret=gson.fromJson(json,cls);
 		return ret;
 	}
+	
+	/** 
+     * 获得超类的参数类型，取第一个参数类型 
+     * @param <T> 类型参数 
+     * @param clazz 超类类型 
+     */  
+    @SuppressWarnings("rawtypes")  
+    public static <T> Class<T> getClassGenricType(final Class clazz) {  
+        return getClassGenricType(clazz, 0);  
+    }  
+      
+    /** 
+     * 根据索引获得超类的参数类型 
+     * @param clazz 超类类型 
+     * @param index 索引 
+     */  
+    @SuppressWarnings("rawtypes")  
+    public static Class getClassGenricType(final Class clazz, final int index) {
+        Type genType = clazz.getGenericSuperclass();  
+        if (!(genType instanceof ParameterizedType)) {  
+            return Object.class;  
+        }  
+        Type[] params = ((ParameterizedType)genType).getActualTypeArguments();  
+        if (index >= params.length || index < 0) {  
+            return Object.class;  
+        }  
+        if (!(params[index] instanceof Class)) {  
+            return Object.class;  
+        }  
+        return (Class) params[index];
+    	
+    	//Class <T> entityClass = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]; 
+    }  
+    
+    /*static public<T> Class<T> getClassGenricType(Class<?> cls,int index){
+    	Class<T> entityClass = (Class <T>) ((ParameterizedType) cls.getGenericSuperclass()).getActualTypeArguments()[index];
+    	return entityClass;
+    }*/
+    
+    public static void Toast(String text,int length){
+    	if (BaseActivity.getFrontActivity()==null) return;
+    	Message msg=Message.obtain();
+    	msg.arg1=length;
+    	msg.obj=text;
+    	BaseActivity.getFrontActivity().toastHandler.sendMessage(msg);
+    }
 }

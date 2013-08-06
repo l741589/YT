@@ -1,11 +1,13 @@
 package com.yt.activity;
 
-import com.yt.thread.PostThread;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
+import android.widget.Toast;
+
+import com.yt.thread.PostThread;
 
 public class BaseActivity extends Activity{
 	
@@ -34,9 +36,10 @@ public class BaseActivity extends Activity{
 		super.onStart();
 	}
 	
-	public void startThread(Class<? extends PostThread<?>> cls,String path,Object data,int requestCode,int id){
+	public<REQ_TYPE,RES_TYPE> void startThread(Class<? extends PostThread<REQ_TYPE,RES_TYPE>> cls,
+			String path,REQ_TYPE data,int requestCode,int id){
 		try {
-			PostThread<?> t=cls.newInstance();
+			PostThread<REQ_TYPE,RES_TYPE> t=cls.newInstance();
 			if (path!=null) t.setPath(path);
 			if (data!=null) t.setData(data);
 			if (requestCode!=0) t.setRequestCode(requestCode);
@@ -50,11 +53,22 @@ public class BaseActivity extends Activity{
 		}
 	}
 	
-	public<T> void startThread(String path,Object data,int requestCode,int id){
-			new PostThread<T>(path,data,createHandler(),requestCode,id).start();
+	@SuppressWarnings("unchecked")
+	public<REQ_TYPE,RES_TYPE> 
+	void startThread(String path,REQ_TYPE data,Class<RES_TYPE> resType,int requestCode,int id){
+			new PostThread<REQ_TYPE,RES_TYPE>((Class<REQ_TYPE>)data.getClass(),resType,path,data,createHandler(),requestCode,id).start();
 	}
 	
 	protected Handler createHandler(){
 		return null;
 	}
+	
+	public Handler toastHandler=new Handler(new Callback() {
+		
+		@Override
+		public boolean handleMessage(Message msg) {
+			Toast.makeText(BaseActivity.this,(String)msg.obj,msg.arg1).show();
+			return true;
+		}
+	});
 }

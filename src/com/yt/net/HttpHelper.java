@@ -15,7 +15,7 @@ import java.util.Set;
 import com.yt.util.Util;
 
 public abstract class HttpHelper {
-	public static final String SERVER_ADDR = "http://192.168.1.189:8080/";
+	public static final String SERVER_ADDR = "http://192.168.1.188:8080/";
 	public static final String APP_NAME = "YTServer";
 	
 	public static String getURL(String path){ return SERVER_ADDR+APP_NAME+"/"+path; }
@@ -67,14 +67,14 @@ public abstract class HttpHelper {
 		return null;
 	}
 	
-	public static String doPostDataSend(String path, byte[] data,int x){
+	public static String doPostDataSend(String path, byte[] data){
 		try {
 			URLConnection connection=new URL(getURL(path)).openConnection();
 			connection.setRequestProperty("Content-Type","image/png;charset=UTF-8");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
 			OutputStream outStream = connection.getOutputStream();
-			outStream.write(Util.int2bytes(x));
+			outStream.write(Util.int2bytes(data.length));
 			outStream.write(data);
 			outStream.flush();  
 			outStream.close();
@@ -83,7 +83,7 @@ public abstract class HttpHelper {
 			e.printStackTrace();
 		}
 		return null;
-	}
+	}	
 	
 	public static byte[] doPostDataRecv(String path,Map<String,String> params){
 		try {
@@ -111,6 +111,39 @@ public abstract class HttpHelper {
     			stream.write(bs, 0, l);
     		}    		
     		return stream.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	static public InputStream doPostData(String path, byte[] data){
+		try {
+			URLConnection connection=new URL(getURL(path)).openConnection();
+			connection.setRequestProperty("Content-Type","image/png;charset=UTF-8");
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			OutputStream outStream = connection.getOutputStream();
+			//outStream.write(Util.int2bytes(data.length));
+			outStream.write(data);
+			outStream.flush();  
+			outStream.close();
+			
+			InputStream is=connection.getInputStream();
+    		//byte[] b4=new byte[4];
+    		//is.read(b4);
+    		/*int totallen=Util.bytes2int(b4);
+    		byte[] bs=new byte[totallen];
+    		ByteArrayOutputStream stream=new ByteArrayOutputStream();    		
+    		int len=0;
+    		int l=0;
+    		while (len<totallen){
+    			l=is.read(bs);
+    			if (l==-1) throw new IOException();
+    			len+=l;
+    			stream.write(bs, 0, l);
+    		} */  		
+    		return is;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
